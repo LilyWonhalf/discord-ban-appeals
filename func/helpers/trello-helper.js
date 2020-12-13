@@ -30,9 +30,7 @@ const Trello = {
             throw exception;
         });
 
-        console.log(response);
-
-        return response;
+        return response.json();
     }
 }
 
