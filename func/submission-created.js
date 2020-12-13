@@ -2,6 +2,7 @@ const fetch = require("node-fetch");
 
 const { API_ENDPOINT, MAX_EMBED_FIELD_CHARS } = require("./helpers/discord-helpers.js");
 const { createJwt, decodeJwt } = require("./helpers/jwt-helpers.js");
+const Trello = require("./helpers/trello-helper.js");
 
 exports.handler = async function (event, context) {
     let payload;
@@ -26,10 +27,19 @@ exports.handler = async function (event, context) {
 
     if (payload.banReason !== undefined &&
         payload.appealText !== undefined &&
-        payload.futureActions !== undefined && 
+        payload.futureActions !== undefined &&
         payload.token !== undefined) {
-        
+
         const userInfo = decodeJwt(payload.token);
+        const trelloData = {
+            name: `Unban ${userInfo.username}#${userInfo.discriminator} (${userInfo.id})`,
+            desc: `**Why were you banned?**\n${payload.banReason}\n\n**Why do you feel you should be unbanned?**\n${payload.appealText}\n\n**What will you do to avoid being banned in the future?**\n${payload.futureActions}`,
+            idList: Trello.ID_LIST_VOTES,
+            pos: 'top'
+        };
+
+        const card = await Trello.call('cards', trelloData, 'POST').catch(console.log);
+
         const embedFields = [
             {
                 name: "Submitter",
@@ -49,15 +59,12 @@ exports.handler = async function (event, context) {
             }
         ];
 
-        if (process.env.GUILD_ID && !process.env.DISABLE_UNBAN_LINK) {
-            const unbanUrl = new URL("/.netlify/functions/unban", process.env.URL);
-            const unbanInfo = {
-                userId: userInfo.id
-            };
+        if (process.env.GUILD_ID) {
+            const url = card.url || Trello.BOARD_URL;
 
             embedFields.push({
-                name: "Actions",
-                value: `[Approve appeal and unban user](${unbanUrl.toString()}?token=${encodeURIComponent(createJwt(unbanInfo))})`
+                name: "Vote",
+                value: `[Trello card](${url.toString()})`
             });
         }
 
@@ -68,6 +75,7 @@ exports.handler = async function (event, context) {
                 "Authorization": `Bot ${process.env.DISCORD_BOT_TOKEN}`
             },
             body: JSON.stringify({
+                content: '<@&254476057455886337>',
                 embed: {
                     title: "New appeal submitted!",
                     timestamp: new Date().toISOString(),

@@ -30,6 +30,9 @@ By using OAuth2, it ensures users can't forge or fake appeals.
    | Guild ID              | This is where the developer mode you enabled in step 4 comes in handy. Right click your server icon and press **Copy ID**. |
    | Channel ID            | Same deal than the guild ID, but with the channel you created in step 3.                                                   |
    | JSON Web Token secret | Use a password manager to generate a password with ~50 characters, or mash your keyboard.                                  |
+   | Trello key            | Your Trello key                                                                                                            |
+   | Trello token          | Your Trello token                                                                                                          |
+   | Trello board id       | Your Trello board id                                                                                                       |
 
 7. Login to the [Netlify dashboard](https://app.netlify.com) and go to the settings for your site.
 
