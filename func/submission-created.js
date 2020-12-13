@@ -60,7 +60,7 @@ exports.handler = async function (event, context) {
         ];
 
         if (process.env.GUILD_ID) {
-            const url = card.url || Trello.BOARD_URL;
+            const url = card && card.url || Trello.BOARD_URL;
 
             embedFields.push({
                 name: "Vote",

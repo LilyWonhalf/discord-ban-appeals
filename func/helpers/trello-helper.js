@@ -30,7 +30,7 @@ const Trello = {
             throw exception;
         });
 
-        return response.data;
+        return response;
     }
 }
 
