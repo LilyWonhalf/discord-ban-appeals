@@ -19,6 +19,3 @@
   GUILD_ID = "ID of the guild this deployment targets"
   APPEALS_CHANNEL = "ID of the channel used for appeal form submission"
   JWT_SECRET = "JSON Web Token secret, mash keyboard plz"
-  TRELLO_KEY = "Your Trello key"
-  TRELLO_TOKEN = "Your Trello token"
-  TRELLO_BOARD_ID = "Your Trello board ID"

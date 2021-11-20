@@ -1,8 +1,19 @@
 const fetch = require("node-fetch");
 
 const { API_ENDPOINT, MAX_EMBED_FIELD_CHARS } = require("./helpers/discord-helpers.js");
-const { createJwt, decodeJwt } = require("./helpers/jwt-helpers.js");
-const Trello = require("./helpers/trello-helper.js");
+const { decodeJwt } = require("./helpers/jwt-helpers.js");
+
+const react = async (messageId, emojiData, channelId = encodeURIComponent(process.env.APPEALS_CHANNEL)) => {
+    await fetch(
+        `${API_ENDPOINT}/channels/${channelId}/messages/${messageId}/reactions/${emojiData.name}:${emojiData.id}/@me`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bot ${process.env.DISCORD_BOT_TOKEN}`
+            }
+        }
+    );
+}
 
 exports.handler = async function (event, context) {
     let payload;
@@ -31,14 +42,6 @@ exports.handler = async function (event, context) {
         payload.token !== undefined) {
 
         const userInfo = decodeJwt(payload.token);
-        const trelloData = {
-            name: `Unban ${userInfo.username}#${userInfo.discriminator} (${userInfo.id})`,
-            desc: `**Why were you banned?**\n${payload.banReason}\n\n**Why do you feel you should be unbanned?**\n${payload.appealText}\n\n**What will you do to avoid being banned in the future?**\n${payload.futureActions}`,
-            idList: Trello.ID_LIST_VOTES,
-            pos: 'top'
-        };
-
-        const card = await Trello.call('cards', trelloData, 'POST').catch(console.log);
 
         const embedFields = [
             {
@@ -59,15 +62,6 @@ exports.handler = async function (event, context) {
             }
         ];
 
-        if (process.env.GUILD_ID) {
-            const url = card && card.url ? card.url : Trello.BOARD_URL;
-
-            embedFields.push({
-                name: "Vote",
-                value: `[Trello card](${url.toString()})`
-            });
-        }
-
         const result = await fetch(`${API_ENDPOINT}/channels/${encodeURIComponent(process.env.APPEALS_CHANNEL)}/messages`, {
             method: "POST",
             headers: {
@@ -85,6 +79,30 @@ exports.handler = async function (event, context) {
         });
 
         if (result.ok) {
+            await fetch(`${API_ENDPOINT}/channels/${encodeURIComponent(process.env.APPEALS_CHANNEL)}/messages/${result.id}/threads`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bot ${process.env.DISCORD_BOT_TOKEN}`
+                },
+                body: JSON.stringify({
+                    name: `Unban ${userInfo.username}#${userInfo.discriminator}`,
+                    auto_archive_duration: '10080'
+                })
+            });
+
+            const reactEmojis = [
+                { name: 'sondagecontre', id: '751191664994942987' },
+                { name: 'plutotnon', id: '799325839359606784' },
+                { name: 'sondageneutre', id: '637766278299516950' },
+                { name: 'plutotoui', id: '799325839211888730' },
+                { name: 'sondagepour', id: '637766278739918858' }
+            ];
+
+            for (const emoji of reactEmojis) {
+                await react(result.id, emoji);
+            }
+
             if (process.env.USE_NETLIFY_FORMS) {
                 return {
                     statusCode: 200

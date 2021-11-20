@@ -8,20 +8,20 @@ By using OAuth2, it ensures users can't forge or fake appeals.
 
 1. Create an application on the [Discord Developer Portal](https://discord.com/developers/applications).
 
-2. In the **Bot** section of the newly created application's dashboard, create a bot account and invite it to your server with the **Ban Members** permission.  
+2. In the **Bot** section of the newly created application's dashboard, create a bot account and invite it to your server with the **Ban Members** permission.
    > **Pro tip**: Use a [permissions calculator](https://finitereality.github.io/permissions-calculator/) to generate the invite link!
 
-3. In your server, create a channel dedicated to ban appeals. Ensure only mods and the bot can view the channel:  
-   ![](https://cdn.discordapp.com/attachments/688870664941076514/743300978119278642/unknown.png)  
+3. In your server, create a channel dedicated to ban appeals. Ensure only mods and the bot can view the channel:
+   ![](https://cdn.discordapp.com/attachments/688870664941076514/743300978119278642/unknown.png)
    The bot will also need the permission to send messages and embed images here.
 
-4. In Discord's settings, go in the **Appearance** section and enable **Developer Mode**. You will need it soon.  
+4. In Discord's settings, go in the **Appearance** section and enable **Developer Mode**. You will need it soon.
    ![](https://cdn.discordapp.com/attachments/688870664941076514/743301339752169522/unknown.png)
 
-5. Click this button:  
+5. Click this button:
    [![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/sylveon/discord-ban-appeals)
 
-6. In the web page that shows, login to your GitHub or GitLab account. You will be presented fields to fill:  
+6. In the web page that shows, login to your GitHub or GitLab account. You will be presented fields to fill:
    | Field name            | Instructions                                                                                                               |
    | :-------------------- | :------------------------------------------------------------------------------------------------------------------------- |
    | Client ID             | You can get this from the **General Information** section for the application you created in step 1.                       |
@@ -30,9 +30,6 @@ By using OAuth2, it ensures users can't forge or fake appeals.
    | Guild ID              | This is where the developer mode you enabled in step 4 comes in handy. Right click your server icon and press **Copy ID**. |
    | Channel ID            | Same deal than the guild ID, but with the channel you created in step 3.                                                   |
    | JSON Web Token secret | Use a password manager to generate a password with ~50 characters, or mash your keyboard.                                  |
-   | Trello key            | Your Trello key                                                                                                            |
-   | Trello token          | Your Trello token                                                                                                          |
-   | Trello board id       | Your Trello board id                                                                                                       |
 
 7. Login to the [Netlify dashboard](https://app.netlify.com) and go to the settings for your site.
 
