@@ -1,10 +1,11 @@
 const fetch = require("node-fetch");
+const archiveDuration = 10080;
 
 const { API_ENDPOINT, MAX_EMBED_FIELD_CHARS } = require("./helpers/discord-helpers.js");
 const { decodeJwt } = require("./helpers/jwt-helpers.js");
 
 const react = async (messageId, emojiData, channelId = encodeURIComponent(process.env.APPEALS_CHANNEL)) => {
-    await fetch(
+    return await fetch(
         `${API_ENDPOINT}/channels/${channelId}/messages/${messageId}/reactions/${emojiData.name}:${emojiData.id}/@me`, {
             method: "PUT",
             headers: {
@@ -13,7 +14,15 @@ const react = async (messageId, emojiData, channelId = encodeURIComponent(proces
             }
         }
     );
-}
+};
+
+const sleep = (milliseconds = 200) => {
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            resolve();
+        }, milliseconds);
+    });
+};
 
 exports.handler = async function (event, context) {
     let payload;
@@ -27,13 +36,14 @@ exports.handler = async function (event, context) {
             };
         }
 
-        const params = new URLSearchParams(event.body);
+        const params = JSON.parse(event.body).payload.data;
+
         payload = {
-            banReason: params.get("banReason") || undefined,
-            appealText: params.get("appealText") || undefined,
-            futureActions: params.get("futureActions") || undefined,
-            token: params.get("token") || undefined
-        };
+            banReason: params.banReason || undefined,
+            appealText: params.appealText || undefined,
+            futureActions: params.futureActions|| undefined,
+            token: params.token || undefined
+        }
     }
 
     if (payload.banReason !== undefined &&
@@ -79,7 +89,9 @@ exports.handler = async function (event, context) {
         });
 
         if (result.ok) {
-            await fetch(`${API_ENDPOINT}/channels/${encodeURIComponent(process.env.APPEALS_CHANNEL)}/messages/${result.id}/threads`, {
+            const message = await result.json();
+
+            const test = await fetch(`${API_ENDPOINT}/channels/${encodeURIComponent(process.env.APPEALS_CHANNEL)}/messages/${message.id}/threads`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -87,9 +99,11 @@ exports.handler = async function (event, context) {
                 },
                 body: JSON.stringify({
                     name: `Unban ${userInfo.username}#${userInfo.discriminator}`,
-                    auto_archive_duration: '10080'
+                    auto_archive_duration: archiveDuration
                 })
             });
+
+            console.log(await test.text());
 
             const reactEmojis = [
                 { name: 'sondagecontre', id: '751191664994942987' },
@@ -100,7 +114,8 @@ exports.handler = async function (event, context) {
             ];
 
             for (const emoji of reactEmojis) {
-                await react(result.id, emoji);
+                await react(message.id, emoji);
+                await sleep();
             }
 
             if (process.env.USE_NETLIFY_FORMS) {
