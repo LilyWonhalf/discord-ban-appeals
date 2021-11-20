@@ -85,6 +85,51 @@ exports.handler = async function (event, context) {
         });
 
         if (result.ok) {
+            await fetch(`${API_ENDPOINT}/channels/${encodeURIComponent(process.env.APPEALS_CHANNEL)}/messages/${result.id}/threads`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bot ${process.env.DISCORD_BOT_TOKEN}`
+                },
+                body: JSON.stringify({
+                    name: `Unban ${userInfo.username}#${userInfo.discriminator}`,
+                    auto_archive_duration: '10080'
+                })
+            });
+
+            const baseApiAuth = {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bot ${process.env.DISCORD_BOT_TOKEN}`
+                }
+            }
+
+            await fetch(
+                `${API_ENDPOINT}/channels/${encodeURIComponent(process.env.APPEALS_CHANNEL)}/messages/reactions/voteno:911361906571370527/@me`,
+                baseApiAuth
+            );
+
+            await fetch(
+                `${API_ENDPOINT}/channels/${encodeURIComponent(process.env.APPEALS_CHANNEL)}/messages/reactions/plutotnon:911361906571370527/@me`,
+                baseApiAuth
+            );
+
+            await fetch(
+                `${API_ENDPOINT}/channels/${encodeURIComponent(process.env.APPEALS_CHANNEL)}/messages/reactions/sondageneutre:911361906571370527/@me`,
+                baseApiAuth
+            );
+
+            await fetch(
+                `${API_ENDPOINT}/channels/${encodeURIComponent(process.env.APPEALS_CHANNEL)}/messages/reactions/plutotoui:911361906571370527/@me`,
+                baseApiAuth
+            );
+
+            await fetch(
+                `${API_ENDPOINT}/channels/${encodeURIComponent(process.env.APPEALS_CHANNEL)}/messages/reactions/voteyes:911361906571370527/@me`,
+                baseApiAuth
+            );
+
             if (process.env.USE_NETLIFY_FORMS) {
                 return {
                     statusCode: 200
