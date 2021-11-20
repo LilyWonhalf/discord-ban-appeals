@@ -117,7 +117,7 @@ exports.handler = async function (event, context) {
                 "Authorization": `Bot ${process.env.DISCORD_BOT_TOKEN}`
             },
             body: JSON.stringify({
-                name: `Appeal: ${userInfo.username}#${userInfo.discriminator}`,
+                name: `${userInfo.username}#${userInfo.discriminator} appeal`,
                 auto_archive_duration: archiveDuration
             })
         });
