@@ -36,13 +36,26 @@ exports.handler = async function (event, context) {
             };
         }
 
-        const params = JSON.parse(event.body).payload.data;
+        let params;
 
-        payload = {
-            banReason: params.banReason || undefined,
-            appealText: params.appealText || undefined,
-            futureActions: params.futureActions|| undefined,
-            token: params.token || undefined
+        try {
+            params = JSON.parse(event.body).payload.data;
+
+            payload = {
+                banReason: params.banReason || undefined,
+                appealText: params.appealText || undefined,
+                futureActions: params.futureActions|| undefined,
+                token: params.token || undefined
+            }
+        } catch (error) {
+            params = new URLSearchParams(event.body);
+
+            payload = {
+                banReason: params.get("banReason") || undefined,
+                appealText: params.get("appealText") || undefined,
+                futureActions: params.get("futureActions") || undefined,
+                token: params.get("token") || undefined
+            };
         }
     }
 
