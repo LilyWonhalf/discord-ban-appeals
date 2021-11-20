@@ -1,5 +1,5 @@
 const fetch = require("node-fetch");
-const archiveDuration = 10080;
+let archiveDuration;
 
 const { API_ENDPOINT, MAX_EMBED_FIELD_CHARS } = require("./helpers/discord-helpers.js");
 const { decodeJwt } = require("./helpers/jwt-helpers.js");
@@ -40,6 +40,7 @@ exports.handler = async function (event, context) {
 
         try {
             params = JSON.parse(event.body).payload.data;
+            archiveDuration = 1440;
 
             payload = {
                 banReason: params.banReason || undefined,
@@ -49,6 +50,7 @@ exports.handler = async function (event, context) {
             }
         } catch (error) {
             params = new URLSearchParams(event.body);
+            archiveDuration = 10080;
 
             payload = {
                 banReason: params.get("banReason") || undefined,
@@ -92,7 +94,7 @@ exports.handler = async function (event, context) {
                 "Authorization": `Bot ${process.env.DISCORD_BOT_TOKEN}`
             },
             body: JSON.stringify({
-                content: '<@&254476057455886337>',
+                content: `<@&254476057455886337> <@${userInfo.id}>`,
                 embed: {
                     title: "New appeal submitted!",
                     timestamp: new Date().toISOString(),
