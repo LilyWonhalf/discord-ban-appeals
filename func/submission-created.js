@@ -1,3 +1,4 @@
+const cookie = require("cookie");
 const fetch = require("node-fetch");
 let archiveDuration;
 
@@ -33,6 +34,15 @@ exports.handler = async function (event, context) {
         if (event.httpMethod !== "POST") {
             return {
                 statusCode: 405
+            };
+        }
+
+        if (typeof event.headers.cookie !== 'undefined' && event.headers.cookie.includes('submitted-appeal')) {
+            return {
+                statusCode: 303,
+                headers: {
+                    "Location": `/error?msg=${encodeURIComponent("You already submitted an appeal.")}`
+                }
             };
         }
 
@@ -165,10 +175,18 @@ exports.handler = async function (event, context) {
                 statusCode: 200
             };
         } else {
+            const submittedAppealCookie = cookie.serialize('submitted-appeal', '1', {
+                secure: true,
+                httpOnly: true,
+                path: '/',
+                maxAge: 3600 * 24 * 14,
+            });
+
             return {
                 statusCode: 303,
                 headers: {
-                    "Location": "/success"
+                    "Location": "/success",
+                    "Set-Cookie": submittedAppealCookie,
                 }
             };
         }

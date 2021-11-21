@@ -10,6 +10,15 @@ exports.handler = async function (event, context) {
         };
     }
 
+    if (typeof event.headers.cookie !== 'undefined' && event.headers.cookie.includes('submitted-appeal')) {
+        return {
+            statusCode: 303,
+            headers: {
+                "Location": `/error?msg=${encodeURIComponent("You already submitted an appeal.")}`
+            }
+        };
+    }
+
     if (event.queryStringParameters.code !== undefined) {
         const result = await fetch("https://discord.com/api/oauth2/token", {
             method: "POST",

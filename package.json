@@ -1,5 +1,6 @@
 {
     "dependencies": {
+        "cookie": "^0.4.1",
         "discord.js": "^12.2.0",
         "jsonwebtoken": "^8.5.1",
         "node-fetch": "^2.6.1"
