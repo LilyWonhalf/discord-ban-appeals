@@ -37,11 +37,11 @@ exports.handler = async function (event, context) {
             };
         }
 
-        if (event.headers.cookie !== undefined && event.headers.cookie.includes('submitted-appeal')) {
+        if (typeof event.headers.cookie !== 'undefined' && event.headers.cookie.includes('submitted-appeal')) {
             return {
                 statusCode: 303,
                 headers: {
-                    "Location": `/error?msg=${encodeURIComponent("An appeal has been submitted recently\nPlease try again in a few minutes.")}`
+                    "Location": `/error?msg=${encodeURIComponent("You already submitted an appeal.")}`
                 }
             };
         }
@@ -179,7 +179,7 @@ exports.handler = async function (event, context) {
                 secure: true,
                 httpOnly: true,
                 path: '/',
-                maxAge: 60,
+                maxAge: 3600 * 24 * 14,
             });
 
             return {
