@@ -112,13 +112,12 @@ exports.handler = async function (event, context) {
             })
         });
 
-        if (!result.ok) {
-            return {
-                statusCode: 400
-            };
-        }
-
         const message = await result.json();
+
+        if (!result.ok) {
+            console.log(message);
+            throw new Error("Failed to send appeal message");
+        }
 
         result = await fetch(`${API_ENDPOINT}/channels/${encodeURIComponent(process.env.APPEALS_CHANNEL)}/messages/${message.id}/threads`, {
             method: "POST",
@@ -132,13 +131,12 @@ exports.handler = async function (event, context) {
             })
         });
 
-        if (!result.ok) {
-            return {
-                statusCode: 400
-            }
-        }
-
         const threadChannel = await result.json();
+
+        if (!result.ok) {
+            console.log(threadChannel);
+            throw new Error("Failed to create appeal discussion thread");
+        }
 
         result = await fetch(`${API_ENDPOINT}/channels/${threadChannel.id}/messages`, {
             method: "POST",
@@ -151,10 +149,11 @@ exports.handler = async function (event, context) {
             })
         });
 
+        const notificationMessage = await result.json();
+
         if (!result.ok) {
-            return {
-                statusCode: 400
-            }
+            console.log(notificationMessage);
+            throw new Error("Failed to send mod notification");
         }
 
         const reactEmojis = [
@@ -190,8 +189,9 @@ exports.handler = async function (event, context) {
                 }
             };
         }
-    } else {
-        console.log(await result.json());
-        throw new Error("Failed to submit message");
     }
+
+    return {
+        statusCode: 400
+    };
 }
